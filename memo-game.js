@@ -1,95 +1,40 @@
+/* Create a  clickable memory game. */
 var memoryGame = document.createElement('div');
-memoryGame.id = 'memoryGame';
+memoryGame.innerHTML = '<div id="memoryGame" style="width: 500px; height: 500px; background-color: #eee;"></div>';
 document.body.appendChild(memoryGame);
-
-var memoryGameCards = [
-  {
-    id: 'card1',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/JavaScript-logo.png/240px-JavaScript-logo.png',
-    name: 'JavaScript'
-  },
-  {
-    id: 'card2',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/JavaScript-logo.png/240px-JavaScript-logo.png',
-    name: 'JavaScript'
-  },
-  {
-    id: 'card3',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/CSS3_logo_and_wordmark.svg/240px-CSS3_logo_and_wordmark.svg.png',
-    name: 'CSS'
-  },
-  {
-    id: 'card4',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/CSS3_logo_and_wordmark.svg/240px-CSS3_logo_and_wordmark.svg.png',
-    name: 'CSS'
-  },
-  {
-    id: 'card5',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/HTML5_logo_and_wordmark.svg/240px-HTML5_logo_and_wordmark.svg.png',
-    name: 'HTML'
-  },
-  {
-    id: 'card6',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/HTML5_logo_and_wordmark.svg/240px-HTML5_logo_and_wordmark.svg.png',
-    name: 'HTML'
-  },
-  {
-    id: 'card7',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/240px-React-icon.svg.png',
-    name: 'React'
-  },
-  {
-    id: 'card8',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/240px-React-icon.svg.png',
-    name: 'React'
-  },
-  {
-    id: 'card9',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Angular_full_color_logo.svg/240px-Angular_full_color_logo.svg.png',
-    name: 'Angular'
-  },
-  {
-    id: 'card10',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Angular_full_color_logo.svg/240px-Angular_full_color_logo.svg.png',
-    name: 'Angular'
-  },
-  {
-    id: 'card11',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Node.js_logo.svg/240px-Node.js_logo.svg.png',
-    name: 'Node'
-  },
-  {
-    id: 'card12',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Node.js_logo.svg/240px-Node.js_logo.svg.png',
-    name: 'Node'
-  }
-];
-
-var memoryGameCardsShuffled = shuffle(memoryGameCards);
-
-function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-  return array;
+var memoryGame = document.getElementById('memoryGame');
+var memoryGameHTML = '';
+var card = '<div class="card col-xs-3">';
+var cardBack = '<div class="card-back">';
+var cardFront = '<div class="card-front">';
+var cardPair = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6];
+for (var i = 0; i < 12; i++) {
+  var randomIndex = Math.floor(Math.random() * cardPair.length);
+  var randomNumber = cardPair.splice(randomIndex, 1)[0];
+  memoryGameHTML += card + cardBack + '?' + '</div>' + cardFront + randomNumber + '</div></div>';
 }
-for (var i = 0; i < memoryGameCardsShuffled.length; i++) {
-  var memoryGameCard = document.createElement('div');
-  memoryGameCard.className = 'memoryGameCard';
-  memoryGameCard.id = memoryGameCardsShuffled[i].id;
-  memoryGameCard.innerHTML = '<img src="' + memoryGameCardsShuffled[i].image + '" alt="' + memoryGameCardsShuffled[i].name + '" />';
-  memoryGame.appendChild(memoryGameCard);
+memoryGame.innerHTML = memoryGameHTML;
+var cards = document.getElementsByClassName('card');
+var cardsLength = cards.length;
+var flippedCards = [];
+for (var i = 0; i < cardsLength; i++) {
+  cards[i].addEventListener('click', flipCard, false);
 }
-var memoryGameCards = document.getElementsByClassName('memoryGameCard');
-for (var i = 0; i < memoryGameCards.length; i++) {
-  memoryGameCards[i].addEventListener('click', function() {
+function flipCard() {
+  if (flippedCards.length < 2) {
     this.classList.add('flipped');
-  });
+    flippedCards.push(this);
+    if (flippedCards.length === 2) {
+      if (flippedCards[0].childNodes[3].innerHTML === flippedCards[1].childNodes[3].innerHTML) {
+        flippedCards[0].removeEventListener('click', flipCard, false);
+        flippedCards[1].removeEventListener('click', flipCard, false);
+      }
+      setTimeout(flipBack, 1000);
+    }
+  }
+}
+function flipBack() {
+  flippedCards[0].classList.remove('flipped');
+  flippedCards[1].classList.remove('flipped');
+  flippedCards = [];
 }
